@@ -298,15 +298,15 @@ class SpectralReduction:
         V_batch = self._predict(batch_raw)
         eigenvalues = np.diag(V_batch.T @ L_batch @ V_batch)
         indices = np.argsort(eigenvalues)
-        smallest_index = indices[0]
-        V = V[:, np.arange(V.shape[1]) != smallest_index]
-        V = V[
-            :,
-            (np.arange(V.shape[1]) == indices[1])
-            | (np.arange(V.shape[1]) == indices[2]),
-        ]
 
-        return V
+        # smallest_index = indices[0]
+        # V = V[:, np.arange(V.shape[1]) != smallest_index]
+        # V = V[:, (np.arange(V.shape[1]) == indices[1]) | (np.arange(V.shape[1]) == indices[2]),]
+        # return V
+
+        V = V[:, indices]
+        return V[:, 1:]
+        
 
     def visualize(
         self, V: np.ndarray, y: torch.Tensor = None, n_components: int = 1
