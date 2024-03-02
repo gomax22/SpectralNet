@@ -50,10 +50,15 @@ spectralnet.fit(X, y) # X is the dataset and it should be a torch.Tensor
 cluster_assignments = spectralnet.predict(X) # Get the final assignments to clusters
 
 y = y_train.detach().cpu().numpy() # In case your labels are of torch.Tensor type.
+
+# in one line, Metrics.clustering_report({"SpectralNet": cluster_assignments}, y, n_clusters=2)
+# or
 acc_score = Metrics.acc_score(cluster_assignments, y, n_clusters=2)
 nmi_score = Metrics.nmi_score(cluster_assignments, y)
+ari_score = Metrics.ari_score(cluster_assignments, y)
 print(f"ACC: {np.round(acc_score, 3)}")
 print(f"NMI: {np.round(nmi_score, 3)}")
+print(f"ARI: {np.round(ari_score, 3)}")
 ```
 
 You can read the code docs for more information and functionalities<br>
