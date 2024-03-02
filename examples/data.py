@@ -1,15 +1,11 @@
 import h5py
 import torch
 import numpy as np
-import scipy.io
-
-
-from torch.utils.data import Dataset, Subset
 from sklearn.datasets import make_moons
 from torchvision import datasets, transforms
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
-
+from sklearn.datasets import fetch_openml
 
 def load_mnist() -> tuple:
     tensor_transform = transforms.Compose([transforms.ToTensor()])
@@ -26,7 +22,6 @@ def load_mnist() -> tuple:
     x_test, y_test = torch.cat(x_test), torch.Tensor(y_test)
 
     return x_train, y_train, x_test, y_test
-
 
 def load_twomoon() -> tuple:
     data, y = make_moons(n_samples=7000, shuffle=True, noise=0.075, random_state=None)
@@ -55,25 +50,36 @@ def load_reuters() -> tuple:
     return x_train, y_train, x_test, y_test
 
 
-def load_from_path(dpath: str, lpath: str = None) -> tuple:
-    X = np.loadtxt(dpath, delimiter=",", dtype=np.float32)
-    n_train = int(0.9 * len(X))
-
-    x_train, x_test = X[:n_train], X[n_train:]
-    x_train, x_test = torch.from_numpy(x_train), torch.from_numpy(x_test)
-
-    if lpath is not None:
-        y = np.loadtxt(lpath, delimiter=",", dtype=np.float32)
-        y_train, y_test = y[:n_train], y[n_train:]
-        y_train, y_test = torch.from_numpy(y_train), torch.from_numpy(y_test)
-
-    else:
-        y_train, y_test = None, None
-
+def load_iris() -> tuple:
+    import sklearn.datasets as datasets
+    iris = datasets.load_iris()
+    x_train, x_test, y_train, y_test = train_test_split(
+        iris.data, iris.target, test_size=0.10
+    )
+    x_train, x_test = torch.Tensor(x_train), torch.Tensor(x_test)
+    y_train, y_test = torch.Tensor(y_train), torch.Tensor(y_test)
+    
     return x_train, y_train, x_test, y_test
 
 
-def load_data(dataset: str) -> tuple:
+def load_from_openml(dataset_id: int) -> tuple:
+    x, y = fetch_openml(data_home="../data", data_id=dataset_id, as_frame=False, return_X_y=True)
+    y = y.astype(np.int32)
+
+    x_train, x_test, y_train, y_test = train_test_split(
+        x, y, test_size=0.10
+    )
+    if dataset_id == 1478: # har, eeg
+        y_train, y_test = y_train - 1, y_test - 1
+
+    x_train, x_test = torch.Tensor(x_train), torch.Tensor(x_test)
+    y_train, y_test = torch.from_numpy(y_train), torch.from_numpy(y_test)
+    
+   
+    return x_train, y_train, x_test, y_test
+
+
+def load_data(dataset: str, reduced: bool = False) -> tuple:
     """
     This function loads the dataset specified in the config file.
 
@@ -96,15 +102,9 @@ def load_data(dataset: str) -> tuple:
         x_train, y_train, x_test, y_test = load_twomoon()
     elif dataset == "reuters":
         x_train, y_train, x_test, y_test = load_reuters()
+    elif dataset == "iris":
+        x_train, y_train, x_test, y_test = load_iris()
     else:
-        try:
-            data_path = dataset["dpath"]
-            if "lpath" in dataset:
-                label_path = dataset["lpath"]
-            else:
-                label_path = None
-        except:
-            raise ValueError("Could not find dataset path. Check your config file.")
-        x_train, y_train, x_test, y_test = load_from_path(data_path, label_path)
+        x_train, y_train, x_test, y_test = load_from_openml(int(dataset))
 
     return x_train, x_test, y_train, y_test
