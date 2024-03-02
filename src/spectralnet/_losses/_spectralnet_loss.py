@@ -3,11 +3,13 @@ import torch.nn as nn
 
 
 class SpectralNetLoss(nn.Module):
-    def __init__(self):
+    def __init__(self, is_normalized: bool = False):
         super(SpectralNetLoss, self).__init__()
 
+        self.is_normalized = is_normalized
+
     def forward(
-        self, W: torch.Tensor, Y: torch.Tensor, is_normalized: bool = False
+        self, W: torch.Tensor, Y: torch.Tensor
     ) -> torch.Tensor:
         """
         This function computes the loss of the SpectralNet model.
@@ -17,13 +19,12 @@ class SpectralNetLoss(nn.Module):
         Args:
             W (torch.Tensor):               Affinity matrix
             Y (torch.Tensor):               Output of the network
-            is_normalized (bool, optional): Whether to use the normalized Laplacian matrix or not.
 
         Returns:
             torch.Tensor: The loss
         """
         m = Y.size(0)
-        if is_normalized:
+        if self.is_normalized:
             D = torch.sum(W, dim=1)
             Y = Y / torch.sqrt(D)[:, None]
 

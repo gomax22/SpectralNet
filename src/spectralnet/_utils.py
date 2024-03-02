@@ -1,4 +1,5 @@
 import os
+import functools
 import torch
 import numpy as np
 import matplotlib.pyplot as plt
@@ -540,3 +541,113 @@ def create_weights_dir():
     """
     if not os.path.exists("weights"):
         os.makedirs("weights")
+
+
+def plot_confusion_matrix(cm,
+                          target_names,
+                          fname,
+                          title='Confusion matrix',
+                          cmap=None,
+                          normalize=False):
+    """
+    given a sklearn confusion matrix (cm), make a nice plot
+
+    Arguments
+    ---------
+    cm:           confusion matrix from sklearn.metrics.confusion_matrix
+
+    target_names: given classification classes such as [0, 1, 2]
+                  the class names, for example: ['high', 'medium', 'low']
+
+    title:        the text to display at the top of the matrix
+
+    cmap:         the gradient of the values displayed from matplotlib.pyplot.cm
+                  see http://matplotlib.org/examples/color/colormaps_reference.html
+                  plt.get_cmap('jet') or plt.cm.Blues
+
+    normalize:    If False, plot the raw numbers
+                  If True, plot the proportions
+
+    Usage
+    -----
+    plot_confusion_matrix(cm           = cm,                  # confusion matrix created by
+                                                              # sklearn.metrics.confusion_matrix
+                          normalize    = True,                # show proportions
+                          target_names = y_labels_vals,       # list of names of the classes
+                          title        = best_estimator_name) # title of graph
+
+    Citiation
+    ---------
+    http://scikit-learn.org/stable/auto_examples/model_selection/plot_confusion_matrix.html
+
+    """
+    import matplotlib.pyplot as plt
+    import numpy as np
+    import itertools
+    from mpl_toolkits.axes_grid1 import make_axes_locatable
+
+    if cmap is None:
+        cmap = plt.get_cmap('Blues')
+
+    fig, ax = plt.subplots(figsize=(8, 6))
+    im = ax.imshow(cm, interpolation='nearest', cmap=cmap)
+    ax.set_title(title)
+    
+    divider = make_axes_locatable(ax)
+    cax = divider.append_axes('right', size='5%', pad=0.10)
+    fig.colorbar(im, cax=cax, orientation='vertical')
+    
+
+    if target_names is not None:
+        tick_marks = np.arange(len(target_names))
+        ax.set_xticks(tick_marks, target_names, rotation=45)
+        ax.set_yticks(tick_marks, target_names)
+
+    if normalize:
+        cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
+
+
+    thresh = cm.max() / 1.5 if normalize else cm.max() / 2
+    for i, j in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
+        if normalize:
+            ax.text(j, i, "{:0.4f}".format(cm[i, j]),
+                     horizontalalignment="center",
+                     color="white" if cm[i, j] > thresh else "black")
+        else:
+            ax.text(j, i, "{:,}".format(cm[i, j]),
+                     horizontalalignment="center",
+                     color="white" if cm[i, j] > thresh else "black")
+
+
+    fig.tight_layout()
+    ax.set_ylabel('True label')
+    ax.set_xlabel('Predicted label')
+    fig.savefig(fname, dpi=400)
+    plt.close(fig)
+
+
+def debug(func):
+    """Print the function signature and return value.
+
+    This decorator can be used to print the function signature and return value
+    for debugging purposes.
+
+    Args:
+        func (callable): The function to be decorated.
+
+    Returns:
+        callable: The decorated function.
+
+    """
+    @functools.wraps(func)
+    def wrapper_debug(*args, **kwargs):
+        args_repr = [repr(a) for a in args]
+        kwargs_repr = [f"{k}={repr(v)}" for k, v in kwargs.items()]
+        signature = ", ".join(args_repr + kwargs_repr)
+        print(f"Calling {func.__name__}({signature})")
+        value = func(*args, **kwargs)
+        print(f"{func.__name__}() returned {repr(value)}")
+        return value
+    return wrapper_debug
+
+

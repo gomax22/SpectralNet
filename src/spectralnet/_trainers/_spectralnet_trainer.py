@@ -47,6 +47,7 @@ class SpectralTrainer:
         self.architecture = self.spectral_config["hiddens"]
         self.batch_size = self.spectral_config["batch_size"]
         self.is_local_scale = self.spectral_config["is_local_scale"]
+        self.is_normalized = self.spectral_config["is_normalized"]
 
     def train(
         self, X: torch.Tensor, y: torch.Tensor, siamese_net: nn.Module = None
@@ -80,7 +81,7 @@ class SpectralTrainer:
         self.y = y
         self.counter = 0
         self.siamese_net = siamese_net
-        self.criterion = SpectralNetLoss()
+        self.criterion = SpectralNetLoss(is_normalized=self.is_normalized)
         self.spectral_net = SpectralNetModel(
             self.architecture, input_dim=self.X.shape[1]
         ).to(self.device)
