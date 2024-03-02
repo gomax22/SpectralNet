@@ -117,10 +117,10 @@ class Metrics:
         return metrics.adjusted_rand_score(y, cluster_assignments)
     
     @staticmethod
-    def clustering_report(report: dict, y: np.ndarray, n_clusters: int) -> None:
+    def clustering_report(report: dict, y: np.ndarray, n_clusters: int, savefig: bool = False) -> None:
         for method_name, cluster_assignments in report.items():
             print(f"\nClustering report for {method_name}")
-            acc_score = Metrics.acc_score(cluster_assignments, y, n_clusters, fname=method_name)
+            acc_score = Metrics.acc_score(cluster_assignments, y, n_clusters, fname=method_name if savefig else None)
             nmi_score = Metrics.nmi_score(cluster_assignments, y)
             ari_score = Metrics.ari_score(cluster_assignments, y)
             print(f"ACC ({method_name}): {np.round(acc_score, 3)}")

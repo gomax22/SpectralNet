@@ -1,6 +1,6 @@
 .DS_Store
 __pycache__
-/data/MNIST
+/data
 dist
 spectralnet.egg-info
 /cluster_mnist.py
@@ -9,5 +9,8 @@ spectralnet.egg-info
 /src/data.py
 /src/reduce_mnist.py
 /src/reduce_twomoons.py
-/src/spectralnet/_reduction.py
 /src/spectralnet/_trainers/weights
+*.sbatch
+build/
+*.txt
+*.pth
