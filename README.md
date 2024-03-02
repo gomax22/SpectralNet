@@ -6,13 +6,23 @@
 SpectralNet is a Python package that performs spectral clustering with deep neural networks.<br><br>
 This package is based on the following paper - [SpectralNet](https://openreview.net/pdf?id=HJ_aoCyRZ)
 
+
+## Contributions to the original project
+- naive implementation of the standard spectral clustering algorithms (Shi and Malik, Ng-Jordan-Weiss).
+- added adjusted rand index as clustering metrics.
+- introduction of a clustering report, which summarizes the overall performance of each method.
+- added support to other datasets (such as Iris datasets and OpenML datasets).
+- introduction of scripts for visualizing t-SNE representation of the datasets.
+- added examples for comparing SpectralNet and classical spectral clustering algorithms on several datasets.
+
 ## Installation
 
 You can install the latest package version via
 
 ```bash
-pip install spectralnet
+python setup.py install
 ```
+in order to benefit from contributions of this repository.
 
 ## Usage
 
