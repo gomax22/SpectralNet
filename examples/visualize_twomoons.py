@@ -20,7 +20,7 @@ def main():
     ax.scatter(X[:, 0], X[:, 1], c=y, cmap="tab10", s=2)
     ax.grid(True)
     ax.set_title("Visualization of the twomoons dataset")
-    fig.savefig("twomoons.png", dpi=400)
+    fig.savefig("../figures/twomoons.png", dpi=400)
     plt.close(fig)
 
 

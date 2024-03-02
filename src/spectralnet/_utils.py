@@ -622,7 +622,7 @@ def plot_confusion_matrix(cm,
     fig.tight_layout()
     ax.set_ylabel('True label')
     ax.set_xlabel('Predicted label')
-    fig.savefig(fname, dpi=400)
+    fig.savefig(f"../figures/{fname}", dpi=400)
     plt.close(fig)
 
 

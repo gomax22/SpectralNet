@@ -24,7 +24,7 @@ def main():
     sc = ax.scatter(X_embedded[:, 0], X_embedded[:, 1], c=y, cmap="tab10", s=2)
     ax.set_title("t-SNE visualization of MNIST dataset")
     ax.legend(*sc.legend_elements(), fontsize='small', loc='upper right')
-    fig.savefig("mnist_tsne.png", dpi=400)
+    fig.savefig("../figures/mnist_tsne.png", dpi=400)
     plt.close(fig)
 
 if __name__ == "__main__":

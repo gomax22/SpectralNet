@@ -34,7 +34,7 @@ def main():
     L.get_texts()[1].set_text(cluster_labels['$\\mathdefault{1}$'])
     L.get_texts()[2].set_text(cluster_labels['$\\mathdefault{2}$'])
     ax.set_title("t-SNE visualization of iris dataset")
-    fig.savefig("iris_tsne.png", dpi=400)
+    fig.savefig("../figures/iris_tsne.png", dpi=400)
     plt.close(fig)
 
 

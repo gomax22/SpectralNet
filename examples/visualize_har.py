@@ -57,7 +57,7 @@ def main():
     L.get_texts()[3].set_text(cluster_labels['$\\mathdefault{3}$'])
     L.get_texts()[4].set_text(cluster_labels['$\\mathdefault{4}$'])
     L.get_texts()[5].set_text(cluster_labels['$\\mathdefault{5}$'])
-    fig.savefig("har_tsne.png", dpi=400)
+    fig.savefig("../figures/har_tsne.png", dpi=400)
 
     plt.close(fig)
 
