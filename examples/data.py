@@ -69,7 +69,7 @@ def load_from_openml(dataset_id: int) -> tuple:
     x_train, x_test, y_train, y_test = train_test_split(
         x, y, test_size=0.10
     )
-    if dataset_id == 1478: # har, eeg
+    if dataset_id == 1478: # har dataset
         y_train, y_test = y_train - 1, y_test - 1
 
     x_train, x_test = torch.Tensor(x_train), torch.Tensor(x_test)
@@ -79,7 +79,7 @@ def load_from_openml(dataset_id: int) -> tuple:
     return x_train, y_train, x_test, y_test
 
 
-def load_data(dataset: str, reduced: bool = False) -> tuple:
+def load_data(dataset: str) -> tuple:
     """
     This function loads the dataset specified in the config file.
 

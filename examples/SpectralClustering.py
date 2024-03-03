@@ -9,6 +9,7 @@ class BaseSpectralClustering:
     Parameters:
     - n_clusters (int): The number of clusters to find.
     - n_neighbors (int): The number of nearest neighbors to consider when constructing the affinity matrix.
+    - precomputed (bool): Whether the affinity matrix is precomputed or not.
 
     Attributes:
     - n_clusters (int): The number of clusters to find.
@@ -22,26 +23,28 @@ class BaseSpectralClustering:
     - laplacian_eigenvectors (numpy.ndarray): The eigenvectors of the Laplacian matrix.
     """
 
-    def __init__(self, n_clusters: int = 8, n_neighbors: int = 30) -> None:
-            """
-            Initialize the SpectralClustering object.
+    def __init__(self, n_clusters: int = 8, n_neighbors: int = 30, precomputed: bool = False) -> None:
+        """
+        Initialize the SpectralClustering object.
 
-            Args:
-                n_clusters (int): The number of clusters to form.
-                n_neighbors (int): The number of nearest neighbors to consider when constructing the affinity matrix.
+        Args:
+            n_clusters (int): The number of clusters to form.
+            n_neighbors (int): The number of nearest neighbors to consider when constructing the affinity matrix.
+            precomputed (bool): Whether the affinity matrix is precomputed or not.
 
-            Returns:
-                None
-            """
-            self.n_clusters: int = n_clusters
-            self.n_neighbors: int = n_neighbors
-            self.X: numpy.ndarray = None
-            self.kmeans: KMeans = None
-            self.affinity_matrix: numpy.ndarray = None
-            self.degree_matrix: numpy.ndarray = None
-            self.laplacian_matrix: numpy.ndarray = None
-            self.laplacian_eigenvalues: numpy.ndarray = None
-            self.laplacian_eigenvectors: numpy.ndarray = None
+        Returns:
+            None
+        """
+        self.n_clusters: int = n_clusters
+        self.n_neighbors: int = n_neighbors
+        self.precomputed: bool = precomputed
+        self.X: numpy.ndarray = None
+        self.kmeans: KMeans = None
+        self.affinity_matrix: numpy.ndarray = None
+        self.degree_matrix: numpy.ndarray = None
+        self.laplacian_matrix: numpy.ndarray = None
+        self.laplacian_eigenvalues: numpy.ndarray = None
+        self.laplacian_eigenvectors: numpy.ndarray = None
     
     def _get_affinity_matrix(self, X: numpy.ndarray) -> numpy.ndarray:
         """
@@ -163,6 +166,7 @@ class ShiMalikClustering(BaseSpectralClustering):
     Parameters:
     - n_clusters (int): The number of clusters to form.
     - n_neighbors (int): The number of nearest neighbors to consider when constructing the affinity matrix.
+    - precomputed (bool): Whether the affinity matrix is precomputed or not.
 
     Attributes:
     - X (numpy.ndarray): The input data.
@@ -178,18 +182,19 @@ class ShiMalikClustering(BaseSpectralClustering):
 
     """
 
-    def __init__(self, n_clusters: int = 8, n_neighbors: int = 30) -> None:
+    def __init__(self, n_clusters: int = 8, n_neighbors: int = 30, precomputed: bool = False) -> None:
         """
         Initialize the SpectralClustering object.
 
         Parameters:
         - n_clusters (int): The number of clusters to form.
         - n_neighbors (int): The number of nearest neighbors to consider for each sample.
+        - precomputed (bool): Whether the affinity matrix is precomputed or not.
 
         Returns:
         None
         """
-        super().__init__(n_clusters, n_neighbors)
+        super().__init__(n_clusters, n_neighbors, precomputed)
 
     def _get_normalized_laplacian_matrix(self, D: numpy.ndarray, W: numpy.ndarray) -> numpy.ndarray:
         """
@@ -229,20 +234,28 @@ class ShiMalikClustering(BaseSpectralClustering):
 
     def fit(self, X: numpy.ndarray) -> None:
         """
-        Fit the model to the input data.
+        Fit the model to the input data. 
 
         Parameters:
         - X (numpy.ndarray): The input data.
+
+        Notes:
+        - If precomputed == True, the input data is assumed to be the affinity matrix, 
+        otherwise, the affinity matrix is computed from the input data.
 
         Returns:
         - None
 
         """
-        # Store the input data
-        self.X = X.reshape(X.shape[0], -1)
 
-        # Compute the affinity matrix    
-        self.affinity_matrix = self._get_affinity_matrix(self.X)
+        if self.precomputed:
+            # Store the input data
+            self.X = X.reshape(X.shape[0], -1)
+
+            # Compute the affinity matrix    
+            self.affinity_matrix = self._get_affinity_matrix(self.X)
+        else:
+            self.affinity_matrix = X
     
         # compute the degree matrix
         self.degree_matrix = self._get_degree_matrix(self.affinity_matrix)
@@ -267,6 +280,7 @@ class NgJordanWeissClustering(BaseSpectralClustering):
     Parameters:
     - n_clusters (int): The number of clusters to form.
     - n_neighbors (int): The number of nearest neighbors to consider when constructing the affinity matrix.
+    - precomputed (bool): Whether the affinity matrix is precomputed or not.
     
     Attributes:
     - X (numpy.ndarray): The input data.
@@ -282,7 +296,7 @@ class NgJordanWeissClustering(BaseSpectralClustering):
     - fit(X: numpy.ndarray) -> None: Fit the model to the input data.
     
     """
-    def __init__(self, n_clusters: int = 8, n_neighbors: int = 30) -> None:
+    def __init__(self, n_clusters: int = 8, n_neighbors: int = 30, precomputed: bool = False) -> None:
         """
         Initialize a SpectralClustering object.
 
@@ -293,7 +307,7 @@ class NgJordanWeissClustering(BaseSpectralClustering):
         Returns:
         None
         """
-        super().__init__(n_clusters, n_neighbors)
+        super().__init__(n_clusters, n_neighbors, precomputed)
         self.normalized_laplacian_eigenspace = None
     
     def _get_normalized_laplacian_matrix(self, D: numpy.ndarray, W: numpy.ndarray) -> numpy.ndarray:
@@ -353,12 +367,23 @@ class NgJordanWeissClustering(BaseSpectralClustering):
         
         Parameters:
             X (numpy.ndarray): The input data matrix of shape (n_samples, n_features).
-        """
-        # Store the input data
-        self.X = X.reshape(X.shape[0], -1)
 
-        # compute the affinity matrix
-        self.affinity_matrix = self._get_affinity_matrix(self.X)
+        Notes:
+            If precomputed == True, the input data is assumed to be the affinity matrix,
+                otherwise, the affinity matrix is computed from the input data.
+
+        Returns:
+            None
+        """
+
+        if self.precomputed:
+            # Store the input data
+            self.X = X.reshape(X.shape[0], -1)
+
+            # compute the affinity matrix
+            self.affinity_matrix = self._get_affinity_matrix(self.X)
+        else:
+            self.affinity_matrix = X
         
         # compute the degree matrix
         self.degree_matrix = self._get_degree_matrix(self.affinity_matrix)
