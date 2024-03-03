@@ -6,13 +6,23 @@
 SpectralNet is a Python package that performs spectral clustering with deep neural networks.<br><br>
 This package is based on the following paper - [SpectralNet](https://openreview.net/pdf?id=HJ_aoCyRZ)
 
+
+## Contributions to the original project
+- naive implementation of the standard spectral clustering algorithms (Shi and Malik, Ng-Jordan-Weiss).
+- added adjusted rand index as clustering metrics.
+- introduction of a clustering report, which summarizes the overall performance of each method.
+- added support to other datasets (such as Iris datasets and OpenML datasets).
+- introduction of scripts for visualizing t-SNE representation of the datasets.
+- added examples for comparing SpectralNet and classical spectral clustering algorithms on several datasets.
+
 ## Installation
 
 You can install the latest package version via
 
 ```bash
-pip install spectralnet
+python setup.py install
 ```
+in order to benefit from contributions of this repository.
 
 ## Usage
 
@@ -40,10 +50,15 @@ spectralnet.fit(X, y) # X is the dataset and it should be a torch.Tensor
 cluster_assignments = spectralnet.predict(X) # Get the final assignments to clusters
 
 y = y_train.detach().cpu().numpy() # In case your labels are of torch.Tensor type.
+
+# in one line, Metrics.clustering_report({"SpectralNet": cluster_assignments}, y, n_clusters=2)
+# or
 acc_score = Metrics.acc_score(cluster_assignments, y, n_clusters=2)
 nmi_score = Metrics.nmi_score(cluster_assignments, y)
+ari_score = Metrics.ari_score(cluster_assignments, y)
 print(f"ACC: {np.round(acc_score, 3)}")
 print(f"NMI: {np.round(nmi_score, 3)}")
+print(f"ARI: {np.round(ari_score, 3)}")
 ```
 
 You can read the code docs for more information and functionalities<br>
